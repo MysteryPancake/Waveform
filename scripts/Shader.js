@@ -19,8 +19,8 @@ var shaders = {
 				const lowp vec3 ambient = vec3(0.5, 0.2, 0.1);
 				const lowp vec3 lightDiffuse = vec3(1, 0.5, 0.2);
 				lowp vec3 normal = vec3(circCoord, sqrt(1.0 - dot(circCoord, circCoord)));
-				lowp float c = max(dot(normal, lightDir), 0.0);
-				gl_FragColor = vec4(ambient + lightDiffuse * c, 1);
+				lowp float color = max(dot(normal, lightDir), 0.0);
+				gl_FragColor = vec4(ambient + lightDiffuse * color, 1);
 			}
 		`
 	},
@@ -43,10 +43,10 @@ var shaders = {
 			varying lowp vec4 DestinationColor;
 
 			void main(void) {
-				lowp vec4 Color = DestinationColor;
+				lowp vec4 color = DestinationColor;
 				if (DestinationColor.r > (0.5 - Height.y))
-				Color = mix(vec4(1, 0.5, 0.2, 1), DestinationColor, (0.5 - DestinationColor.r) / Height.y);
-				gl_FragColor = Color;
+				color = mix(vec4(1, 0.5, 0.2, 1), DestinationColor, (0.5 - DestinationColor.r) / Height.y);
+				gl_FragColor = color;
 			}
 		`
 	}
