@@ -25,14 +25,14 @@ function updateAudio(x, y, sphere, splash, springs) {
 	sawtooth.osc.frequency.value = x * 0.5;
 	if (y > gl.canvas.height * 0.5) {
 		triangle.gain.gain.value = 2 * (y / gl.canvas.height) - 1;
-		if (y < previousY) {
+		if (y > previousY) {
+			originY = 0;
+		} else {
 			if (originY === 0) { originY = y; }
 			sawtooth.gain.gain.value = 1 - (2 * (y / originY) - 1);
 			var spring = x / gl.canvas.width * springCount;
 			springs[Math.floor(spring)].target = (previousY - y) * 0.1;
 			splashed = false;
-		} else {
-			originY = 0;
 		}
 	} else {
 		triangle.gain.gain.value = 0;
