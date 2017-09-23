@@ -1,13 +1,14 @@
 "use strict";
 
 var gl;
+var sphere;
 var waveShader;
 var dropletShader;
-var droplets = [];
 var springs = [];
+var droplets = [];
 var springCount = 100;
-var requestFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.msRequestAnimationFrame || function(e) { return setTimeout(e, 1000 / 60) }
-var cancelFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame || function(id) { window.clearTimeout(id) }
+var initialHeight = 0.05;
+var requestFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.msRequestAnimationFrame || function(e) { return setTimeout(e, 1000 / 60); };
 
 function getBuffer(func, hint) {
 	var buffer = gl.createBuffer();
@@ -17,11 +18,12 @@ function getBuffer(func, hint) {
 }
 
 function setup() {
-	for (var i = 0; i < springCount; i++) {
-		springs.push(new spring(0.05));
-	}
 	gl = document.getElementById("canvas").getContext("webgl");
 	gl.clearColor(0, 0.1, 0.2, 1);
+	setupAudio(gl, window, splash, initialHeight);
+	for (var i = 0; i < springCount; i++) {
+		springs.push(new spring(initialHeight));
+	}
 	var wave = shader(gl, "Wave");
 	waveShader = {
 		program: wave,
@@ -53,8 +55,8 @@ function setup() {
 	window.addEventListener("resize", resize);
 	window.addEventListener("orientationchange", resize);
 	resize();
-	window.addEventListener("mousedown", clicked);
-	window.addEventListener("touchstart", touched);
+	window.addEventListener("touchmove", touchMove);
+	window.addEventListener("mousemove", mouseMove);
 	requestFrame(draw);
 }
 
@@ -63,28 +65,42 @@ function resize() {
 	gl.canvas.height = window.innerHeight;
 }
 
+function touchMove(e) {
+	updateAudio(e.targetTouches[0].pageX, e.targetTouches[0].pageY, createSphere, splash, springs);
+	updateSphere(e);
+	e.preventDefault();
+}
+
+function mouseMove(e) {
+	updateAudio(e.pageX, e.pageY, createSphere, splash, springs);
+	updateSphere(e);
+	e.preventDefault();
+}
+
 function splash(x, y) {
-	var spring = springs[Math.floor(springCount * (x + 1) / 2)];
-	spring.velocity = y;
-	for (var i = 0; i < Math.abs(y * 10); i++) {
+	for (var i = 0; i < Math.random() * 5; i++) {
 		var size = 10 + Math.random() * 20;
-		var velocity = {x: (Math.random() - 0.5) / 20, y: Math.random() / 10};
-		droplets.push(new droplet({x: x, y: spring.height}, velocity, size));
+		var velocity = {x: (Math.random() - 0.5) * 0.05, y: y * 0.1};
+		droplets.push(new droplet({x: x, y: y}, velocity, size));
 	}
 }
 
-function touched(e) {
-	var x = 2 * (e.targetTouches[0].pageX / gl.canvas.width) - 1;
-	var y = -2 * (e.targetTouches[0].pageY / gl.canvas.height) + 1;
-	splash(x, y);
-	e.preventDefault();
-}
-
-function clicked(e) {
+function updateSphere(e) {
+	if (!sphere) return;
 	var x = 2 * (e.pageX / gl.canvas.width) - 1;
 	var y = -2 * (e.pageY / gl.canvas.height) + 1;
-	splash(x, y);
-	e.preventDefault();
+	sphere.position.x = x;
+	sphere.position.y = y;
+	updateSquare(e.pageX, e.pageY, removeSphere);
+}
+
+function createSphere(size) {
+	sphere = new droplet({x: 0, y: 0}, {x: 0, y: 0}, size);
+	droplets.push(sphere);
+}
+
+function removeSphere() {
+	sphere = undefined;
 }
 
 function getVerts() {
@@ -123,9 +139,10 @@ function getSizes() {
 
 function updateDroplets() {
 	for (var i = 0; i < droplets.length; i++) {
-		var drop = droplets[i];
-		drop.update();
-		if (drop.position.x > 1 || drop.position.x < -1|| drop.position.y < -1) {
+		var droplet = droplets[i];
+		if (droplet === sphere) continue;
+		droplet.update();
+		if (droplet.position.x > 1 || droplet.position.x < -1|| droplet.position.y < -1) {
 			droplets.splice(i, 1);
 		}
 	}
