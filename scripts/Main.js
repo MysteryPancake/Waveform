@@ -6,6 +6,8 @@ var dropletShader;
 var droplets = [];
 var springs = [];
 var springCount = 100;
+var requestFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.msRequestAnimationFrame || function(e) { return setTimeout(e, 1000 / 60) }
+var cancelFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame || function(id) { window.clearTimeout(id) }
 
 function getBuffer(func, hint) {
 	var buffer = gl.createBuffer();
@@ -53,7 +55,7 @@ function setup() {
 	resize();
 	window.addEventListener("mousedown", clicked);
 	window.addEventListener("touchstart", touched);
-	window.requestAnimationFrame(draw);
+	requestFrame(draw);
 }
 
 function resize() {
@@ -179,5 +181,5 @@ function draw() {
 	gl.bindBuffer(gl.ARRAY_BUFFER, waveShader.buffers.color);
 	gl.vertexAttribPointer(waveShader.attribs.color, 3, gl.FLOAT, false, 0, 0);
 	gl.drawArrays(gl.TRIANGLE_STRIP, 0, springCount * 2);
-	window.requestAnimationFrame(draw);
+	requestFrame(draw);
 }
