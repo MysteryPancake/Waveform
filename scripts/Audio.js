@@ -3,11 +3,10 @@
 var square;
 var triangle;
 var sawtooth;
-var originY = 0;
-var previousY = 0;
+var origin = 0;
+var previous = 0;
 var splashed = true;
 var initialHeight = 0;
-var previous = {x: 0, y: 0};
 
 function setupAudio(window, splash, height) {
 	initialHeight = height;
@@ -21,6 +20,7 @@ function updateAudio(x, y, bass, splash, springs) {
 	var springCount = springs.length;
 	triangle.osc.frequency.value = octaveSnapped(x);
 	sawtooth.osc.frequency.value = octaveSnapped(x);
+	var spring = Math.floor(springCount * (x + 1) * 0.5);
 	if (y > 0) {
 		triangle.gain.gain.value = 0;
 		sawtooth.gain.gain.value = 0;
@@ -31,22 +31,21 @@ function updateAudio(x, y, bass, splash, springs) {
 			splash(i * 2 / (springCount - 1) - 1, springs[i].height);
 			springs[i].target = initialHeight;
 		}
-		var size = (y - originY) * 200;
-		if (size > 100) { bass(size); }
+		var size = springs[spring].height * 200;
+		if (size > 50) { bass(size); }
 	} else {
 		splashed = false;
 		triangle.gain.gain.value = -y;
-		if (y > previousY) {
-			if (originY === 0) { originY = y; }
-			sawtooth.gain.gain.value = y - originY;
-			var spring = Math.floor(springCount * (x + 1) * 0.5);
-			springs[spring].target += (y - previousY) * 5;
-		} else if (y < previousY) {
+		if (y > previous) {
+			if (origin === 0) { origin = y; }
+			sawtooth.gain.gain.value = y - origin;
+			springs[spring].target += (y - previous) * 5;
+		} else if (y < previous) {
 			sawtooth.gain.gain.value = 0;
-			originY = 0;
+			origin = 0;
 		}
 	}
-	previousY = y;
+	previous = y;
 }
 
 function createOscillator(context, type) {
@@ -60,10 +59,12 @@ function createOscillator(context, type) {
 	return { osc: oscillator, gain: gain };
 }
 
+var previousPosition = {x: 0, y: 0};
+
 function updateSquare(x, y, bass, remove, drip) {
 	if (y > 0) {
 		square.gain.gain.value = bass.size * 0.005;
-		var difference = Math.abs(x - previous.x) + Math.abs(y - previous.y);
+		var difference = Math.abs(x - previousPosition.x) + Math.abs(y - previousPosition.y);
 		square.osc.frequency.value = octaveSnapped(x) * 0.25 + difference * 1000;
 		if (difference > 0.1) {
 			drip(x, y);
@@ -77,7 +78,7 @@ function updateSquare(x, y, bass, remove, drip) {
 		square.gain.gain.value = 0;
 		remove(x);
 	}
-	previous = {x: x, y: y};
+	previousPosition = {x: x, y: y};
 }
 
 function octaveSnapped(x) {
