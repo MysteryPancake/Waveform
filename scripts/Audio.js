@@ -18,8 +18,8 @@ function setupAudio(window, splash, height) {
 
 function updateAudio(x, y, bass, splash, springs) {
 	var springCount = springs.length;
-	triangle.osc.frequency.value = octaveSnapped(x);
-	sawtooth.osc.frequency.value = octaveSnapped(x);
+	triangle.osc.frequency.value = getSnapped(x);
+	sawtooth.osc.frequency.value = getSnapped(x);
 	var spring = Math.floor(springCount * (x + 1) * 0.5);
 	if (y > 0) {
 		triangle.gain.gain.value = 0;
@@ -65,7 +65,7 @@ function updateSquare(x, y, bass, remove, drip) {
 	if (y > 0) {
 		square.gain.gain.value = bass.size * 0.005;
 		var difference = Math.abs(x - previousPosition.x) + Math.abs(y - previousPosition.y);
-		square.osc.frequency.value = octaveSnapped(x) * 0.25 + difference * 1000;
+		square.osc.frequency.value = getSnapped(x) * 0.25 + difference * 1000;
 		if (difference > 0.1) {
 			drip(x, y);
 			bass.size -= 1;
@@ -81,6 +81,6 @@ function updateSquare(x, y, bass, remove, drip) {
 	previousPosition = {x: x, y: y};
 }
 
-function octaveSnapped(x) {
+function getSnapped(x) {
 	return Math.floor((x + 1) * 10) * 27 + 100;
 }
