@@ -32,7 +32,7 @@ function updateAudio(x, y, bass, splash, springs) {
 			springs[i].target = initialHeight;
 		}
 		var size = (y - originY) * 200;
-		if (size > 20) { bass(size); }
+		if (size > 100) { bass(size); }
 	} else {
 		splashed = false;
 		triangle.gain.gain.value = -y;
