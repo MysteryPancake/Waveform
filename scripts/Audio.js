@@ -42,6 +42,7 @@ function updateAudio(x, y, bass, splash, springs) {
 			var spring = Math.floor(springCount * (x + 1) * 0.5);
 			springs[spring].target += (y - previousY) * 5;
 		} else if (y < previousY) {
+			sawtooth.gain.gain.value = 0;
 			originY = 0;
 		}
 	}
