@@ -1,7 +1,7 @@
 "use strict";
 
 var gl;
-var sphere;
+var bassball;
 var waveShader;
 var dropletShader;
 var springs = [];
@@ -20,7 +20,7 @@ function getBuffer(func, hint) {
 function setup() {
 	gl = document.getElementById("canvas").getContext("webgl");
 	gl.clearColor(0, 0.1, 0.2, 1);
-	setupAudio(gl, window, splash, initialHeight);
+	setupAudio(window, splash, initialHeight);
 	for (var i = 0; i < springCount; i++) {
 		springs.push(new spring(initialHeight));
 	}
@@ -66,14 +66,18 @@ function resize() {
 }
 
 function touchMove(e) {
-	updateAudio(e.targetTouches[0].pageX, e.targetTouches[0].pageY, createSphere, splash, springs);
-	updateSphere(e);
+	var x = 2 * (e.targetTouches[0].pageX / gl.canvas.width) - 1;
+	var y = -2 * (e.targetTouches[0].pageY / gl.canvas.height) + 1;
+	updateAudio(x, y, createBassball, splash, springs);
+	updateBassball(x, y);
 	e.preventDefault();
 }
 
 function mouseMove(e) {
-	updateAudio(e.pageX, e.pageY, createSphere, splash, springs);
-	updateSphere(e);
+	var x = 2 * (e.pageX / gl.canvas.width) - 1;
+	var y = -2 * (e.pageY / gl.canvas.height) + 1;
+	updateAudio(x, y, createBassball, splash, springs);
+	updateBassball(x, y);
 	e.preventDefault();
 }
 
@@ -85,22 +89,29 @@ function splash(x, y) {
 	}
 }
 
-function updateSphere(e) {
-	if (!sphere) return;
-	var x = 2 * (e.pageX / gl.canvas.width) - 1;
-	var y = -2 * (e.pageY / gl.canvas.height) + 1;
-	sphere.position.x = x;
-	sphere.position.y = y;
-	updateSquare(e.pageX, e.pageY, removeSphere);
+function drip(x, y) {
+	var size = 10 + Math.random() * 10;
+	var velocity = (Math.random() - 0.5) * 0.01;
+	var position = x + (Math.random() - 0.5) * 0.1;
+	droplets.push(new droplet({x: position, y: y}, {x: velocity, y: 0}, size));
 }
 
-function createSphere(size) {
-	sphere = new droplet({x: 0, y: 0}, {x: 0, y: 0}, size);
-	droplets.push(sphere);
+function createBassball(size) {
+	bassball = new droplet({x: 0, y: 0}, {x: 0, y: 0}, size);
+	droplets.push(bassball);
 }
 
-function removeSphere() {
-	sphere = undefined;
+function updateBassball(x, y) {
+	if (!bassball) return;
+	bassball.position.x = x;
+	bassball.position.y = y;
+	updateSquare(x, y, bassball, removeBassball, drip);
+}
+
+function removeBassball(x) {
+	var spring = Math.floor(springCount * (x + 1) * 0.5);
+	springs[spring].velocity -= bassball.size * 0.002;
+	bassball = undefined;
 }
 
 function getVerts() {
@@ -140,7 +151,7 @@ function getSizes() {
 function updateDroplets() {
 	for (var i = 0; i < droplets.length; i++) {
 		var droplet = droplets[i];
-		if (droplet === sphere) continue;
+		if (droplet === bassball) continue;
 		droplet.update();
 		if (droplet.position.x > 1 || droplet.position.x < -1|| droplet.position.y < -1) {
 			droplets.splice(i, 1);

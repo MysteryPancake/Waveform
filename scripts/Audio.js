@@ -1,6 +1,5 @@
 "use strict";
 
-var gl;
 var square;
 var triangle;
 var sawtooth;
@@ -10,8 +9,7 @@ var splashed = true;
 var initialHeight = 0;
 var previous = {x: 0, y: 0};
 
-function setupAudio(webgl, window, splash, height) {
-	gl = webgl;
+function setupAudio(window, splash, height) {
 	initialHeight = height;
 	var context = new (window.AudioContext || window.webkitAudioContext)();
 	triangle = createOscillator(context, "triangle");
@@ -19,37 +17,33 @@ function setupAudio(webgl, window, splash, height) {
 	square = createOscillator(context, "square");
 }
 
-function updateAudio(x, y, sphere, splash, springs) {
+function updateAudio(x, y, bass, splash, springs) {
 	var springCount = springs.length;
-	triangle.osc.frequency.value = x * 0.5;
-	sawtooth.osc.frequency.value = x * 0.5;
-	if (y > gl.canvas.height * 0.5) {
-		triangle.gain.gain.value = 2 * (y / gl.canvas.height) - 1;
-		if (y > previousY) {
-			originY = 0;
-		} else {
-			if (originY === 0) { originY = y; }
-			sawtooth.gain.gain.value = 1 - (2 * (y / originY) - 1);
-			var spring = x / gl.canvas.width * springCount;
-			springs[Math.floor(spring)].target = (previousY - y) * 0.1;
-			splashed = false;
-		}
-	} else {
+	triangle.osc.frequency.value = octaveSnapped(x);
+	sawtooth.osc.frequency.value = octaveSnapped(x);
+	if (y > 0) {
 		triangle.gain.gain.value = 0;
 		sawtooth.gain.gain.value = 0;
 		if (splashed) return;
+		splashed = true;
 		for (var i = 0; i < springCount; i++) {
 			if (springs[i].target === initialHeight) continue;
+			splash(i * 2 / (springCount - 1) - 1, springs[i].height);
 			springs[i].target = initialHeight;
-			var x = i * 2 / (springCount - 1) - 1;
-			var y = springs[i].height;
-			splash(x, y);
 		}
-		sphere((originY - y) * 0.2);
-		var x = 2 * (x / gl.canvas.width) - 1;
-		var y = -2 * (y / gl.canvas.height) + 1;
-		splash(x, y);
-		splashed = true;
+		var size = (y - originY) * 200;
+		if (size > 20) { bass(size); }
+	} else {
+		splashed = false;
+		triangle.gain.gain.value = -y;
+		if (y > previousY) {
+			if (originY === 0) { originY = y; }
+			sawtooth.gain.gain.value = y - originY;
+			var spring = Math.floor(springCount * (x + 1) * 0.5);
+			springs[spring].target += (y - previousY) * 5;
+		} else if (y < previousY) {
+			originY = 0;
+		}
 	}
 	previousY = y;
 }
@@ -57,7 +51,6 @@ function updateAudio(x, y, sphere, splash, springs) {
 function createOscillator(context, type) {
 	var oscillator = context.createOscillator();
 	oscillator.type = type;
-	oscillator.frequency.value = 200;
 	var gain = context.createGain();
 	gain.gain.value = 0;
 	oscillator.connect(gain);
@@ -66,14 +59,26 @@ function createOscillator(context, type) {
 	return { osc: oscillator, gain: gain };
 }
 
-function updateSquare(x, y, remove) {
-	if (y > gl.canvas.height * 0.5) {
-		square.gain.gain.value = 0;
-		remove();
-	} else {
-		square.gain.gain.value = 1;
+function updateSquare(x, y, bass, remove, drip) {
+	if (y > 0) {
+		square.gain.gain.value = bass.size * 0.005;
 		var difference = Math.abs(x - previous.x) + Math.abs(y - previous.y);
-		square.osc.frequency.value = x * 0.05 + difference;
+		square.osc.frequency.value = octaveSnapped(x) * 0.25 + difference * 1000;
+		if (difference > 0.1) {
+			drip(x, y);
+			bass.size -= 1;
+			if (bass.size <= 0) {
+				square.gain.gain.value = 0;
+				remove(x);
+			}
+		}
+	} else {
+		square.gain.gain.value = 0;
+		remove(x);
 	}
 	previous = {x: x, y: y};
+}
+
+function octaveSnapped(x) {
+	return Math.floor((x + 1) * 10) * 27 + 100;
 }
