@@ -55,8 +55,10 @@ function setup() {
 	window.addEventListener("resize", resize);
 	window.addEventListener("orientationchange", resize);
 	resize();
-	window.addEventListener("touchmove", touchMove);
 	window.addEventListener("mousemove", mouseMove);
+	window.addEventListener("mouseup", dropBassball);
+	window.addEventListener("touchmove", touchMove);
+	window.addEventListener("touchend", dropBassball);
 	requestFrame(draw);
 }
 
@@ -65,18 +67,18 @@ function resize() {
 	gl.canvas.height = window.innerHeight;
 }
 
-function touchMove(e) {
-	var x = 2 * (e.targetTouches[0].pageX / gl.canvas.width) - 1;
-	var y = -2 * (e.targetTouches[0].pageY / gl.canvas.height) + 1;
-	updateAudio(x, y, createBassball, splash, springs);
+function mouseMove(e) {
+	var x = 2 * (e.pageX / gl.canvas.width) - 1;
+	var y = -2 * (e.pageY / gl.canvas.height) + 1;
+	updateAudio(x, y, createBassball, splash, springs, getSpring);
 	updateBassball(x, y);
 	e.preventDefault();
 }
 
-function mouseMove(e) {
-	var x = 2 * (e.pageX / gl.canvas.width) - 1;
-	var y = -2 * (e.pageY / gl.canvas.height) + 1;
-	updateAudio(x, y, createBassball, splash, springs);
+function touchMove(e) {
+	var x = 2 * (e.targetTouches[0].pageX / gl.canvas.width) - 1;
+	var y = -2 * (e.targetTouches[0].pageY / gl.canvas.height) + 1;
+	updateAudio(x, y, createBassball, splash, springs, getSpring);
 	updateBassball(x, y);
 	e.preventDefault();
 }
@@ -105,12 +107,11 @@ function updateBassball(x, y) {
 	if (!bassball) return;
 	bassball.position.x = x;
 	bassball.position.y = y;
-	updateSquare(x, y, bassball, removeBassball, drip);
+	updateSquare(x, y, drip, bassball, dropBassball);
 }
 
-function removeBassball(x) {
-	var spring = Math.floor(springCount * (x + 1) * 0.5);
-	springs[spring].velocity -= bassball.size * 0.002;
+function dropBassball() {
+	square.gain.gain.value = 0;
 	bassball = undefined;
 }
 
@@ -148,9 +149,17 @@ function getSizes() {
 	return new Float32Array(sizes);
 }
 
+function getSpring(x) {
+	return springs[Math.floor(springCount * (x + 1) * 0.5)];
+}
+
 function updateDroplets() {
 	for (var i = 0; i < droplets.length; i++) {
 		var droplet = droplets[i];
+		var spring = getSpring(droplet.position.x);
+		if (spring && spring.height > droplet.position.y + 0.1) {
+			spring.velocity -= droplet.size * 0.0005;
+		}
 		if (droplet === bassball) continue;
 		droplet.update();
 		if (droplet.position.x > 1 || droplet.position.x < -1|| droplet.position.y < -1) {

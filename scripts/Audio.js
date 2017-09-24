@@ -9,19 +9,19 @@ var splashed = true;
 var initialHeight = 0;
 
 function setupAudio(window, splash, height) {
-	initialHeight = height;
 	var context = new (window.AudioContext || window.webkitAudioContext)();
 	triangle = createOscillator(context, "triangle");
 	sawtooth = createOscillator(context, "sawtooth");
 	square = createOscillator(context, "square");
+	initialHeight = height;
 }
 
-function updateAudio(x, y, bass, splash, springs) {
-	var springCount = springs.length;
+function updateAudio(x, y, bass, splash, springs, getSpring) {
 	triangle.osc.frequency.value = getSnapped(x);
 	sawtooth.osc.frequency.value = getSnapped(x);
-	var index = springCount * (x + 1) * 0.5;
-	var spring = springs[Math.floor(index)];
+	var springCount = springs.length;
+	var spring = getSpring(x);
+	if (!spring) return;
 	if (y > 0) {
 		triangle.gain.gain.value = 0;
 		sawtooth.gain.gain.value = 0;
@@ -62,7 +62,7 @@ function createOscillator(context, type) {
 
 var previousPosition = {x: 0, y: 0};
 
-function updateSquare(x, y, bass, remove, drip) {
+function updateSquare(x, y, drip, bass, drop) {
 	if (y > 0) {
 		square.gain.gain.value = bass.size * 0.005;
 		var difference = Math.abs(x - previousPosition.x) + Math.abs(y - previousPosition.y);
@@ -71,13 +71,11 @@ function updateSquare(x, y, bass, remove, drip) {
 			drip(x, y);
 			bass.size -= 1;
 			if (bass.size <= 0) {
-				square.gain.gain.value = 0;
-				remove(x);
+				drop();
 			}
 		}
 	} else {
-		square.gain.gain.value = 0;
-		remove(x);
+		drop();
 	}
 	previousPosition = {x: x, y: y};
 }
