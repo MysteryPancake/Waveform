@@ -1,6 +1,6 @@
 "use strict";
 
-var shaders = {
+var shaderSource = {
 	Droplet: {
 		Vertex: `
 			attribute mediump vec4 Position;
@@ -48,9 +48,16 @@ var shaders = {
 	}
 };
 
+function getBuffer(gl, func, hint) {
+	var buffer = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+	gl.bufferData(gl.ARRAY_BUFFER, func(), hint);
+	return buffer;
+}
+
 function compile(gl, name, type, str) {
 	var shader = gl.createShader(type);
-	gl.shaderSource(shader, shaders[name][str]);
+	gl.shaderSource(shader, shaderSource[name][str]);
 	gl.compileShader(shader);
 	var success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
 	if (!success) {
@@ -71,4 +78,36 @@ function shader(gl, name) {
 		alert(`Couldn't link shader ${name}! ${gl.getProgramInfoLog(shader)}`);
 	}
 	return program;
+}
+
+function setupShaders(gl, verts, colors, points, sizes) {
+	var wave = shader(gl, "Wave");
+	var waveShader = {
+		program: wave,
+		buffers: {
+			position: getBuffer(gl, verts, gl.DYNAMIC_DRAW),
+			color: getBuffer(gl, colors, gl.STATIC_DRAW)
+		},
+		attribs: {
+			position: gl.getAttribLocation(wave, "Position"),
+			color: gl.getAttribLocation(wave, "SourceColor")
+		}
+	};
+	gl.enableVertexAttribArray(waveShader.attribs.position);
+	gl.enableVertexAttribArray(waveShader.attribs.color);
+	var droplet = shader(gl, "Droplet");
+	var dropletShader = {
+		program: droplet,
+		buffers: {
+			position: getBuffer(gl, points, gl.DYNAMIC_DRAW),
+			size: getBuffer(gl, sizes, gl.DYNAMIC_DRAW)
+		},
+		attribs: {
+			position: gl.getAttribLocation(droplet, "Position"),
+			size: gl.getAttribLocation(droplet, "Size")
+		}
+	};
+	gl.enableVertexAttribArray(dropletShader.attribs.position);
+	gl.enableVertexAttribArray(dropletShader.attribs.size);
+	return { wave: waveShader, droplet: dropletShader };
 }
