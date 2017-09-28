@@ -26,7 +26,6 @@ function createOscillator(type) {
 }
 
 function updateAudio(x, y, springs, droplets) {
-	iOSFix();
 	triangle.osc.frequency.value = getSnapped(x);
 	sawtooth.osc.frequency.value = getSnapped(x);
 	var spring = getSpring(x);
@@ -56,12 +55,6 @@ function updateAudio(x, y, springs, droplets) {
 		}
 	}
 	previous = y;
-}
-
-function iOSFix() {
-	if (context.state === "suspended") {
-		context.resume();
-	}
 }
 
 function splash(x, y, droplets) {
