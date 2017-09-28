@@ -10,20 +10,23 @@ var requestFrame = window.requestAnimationFrame || window.webkitRequestAnimation
 
 function setup() {
 	gl = document.getElementById("canvas").getContext("webgl");
-	shaders = setupShaders(gl, getVerts, getColors, getPoints, getSizes);
 	gl.clearColor(0, 0.1, 0.2, 1);
+	for (var i = 0; i < springCount; i++) {
+		springs.push(new spring(initialHeight));
+	}
+	shaders = setupShaders(gl, getVerts, getColors, getPoints, getSizes);
 	window.addEventListener("resize", resize);
 	window.addEventListener("orientationchange", resize);
 	resize();
 	window.addEventListener("mousemove", mouseMove);
 	window.addEventListener("mouseup", dropBassball);
-	setupBassball(setupAudio());
-	window.addEventListener("touchstart", iOSFix);
+	if ("ontouchstart" in window) {
+		window.addEventListener("touchstart", iOSFix);
+	} else {
+		setupBassball(setupAudio());
+	}
 	window.addEventListener("touchmove", touchMove);
 	window.addEventListener("touchend", dropBassball);
-	for (var i = 0; i < springCount; i++) {
-		springs.push(new spring(initialHeight));
-	}
 	requestFrame(draw);
 }
 
