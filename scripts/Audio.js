@@ -1,12 +1,20 @@
 "use strict";
 
+var context;
 var triangle;
 var sawtooth;
 var origin = 0;
 var previous = 0;
 var splashed = true;
 
-function createOscillator(context, type) {
+function setupAudio() {
+	context = new (window.AudioContext || window.webkitAudioContext)();
+	triangle = createOscillator("triangle");
+	sawtooth = createOscillator("sawtooth");
+	return createOscillator("square");
+}
+
+function createOscillator(type) {
 	var oscillator = context.createOscillator();
 	oscillator.type = type;
 	var gain = context.createGain();
@@ -17,14 +25,8 @@ function createOscillator(context, type) {
 	return { osc: oscillator, gain: gain };
 }
 
-function setupAudio() {
-	var context = new (window.AudioContext || window.webkitAudioContext)();
-	triangle = createOscillator(context, "triangle");
-	sawtooth = createOscillator(context, "sawtooth");
-	return createOscillator(context, "square");
-}
-
 function updateAudio(x, y, springs, droplets) {
+	iOSFix();
 	triangle.osc.frequency.value = getSnapped(x);
 	sawtooth.osc.frequency.value = getSnapped(x);
 	var spring = getSpring(x);
@@ -54,6 +56,12 @@ function updateAudio(x, y, springs, droplets) {
 		}
 	}
 	previous = y;
+}
+
+function iOSFix() {
+	if (context.state === "suspended") {
+		context.resume();
+	}
 }
 
 function splash(x, y, droplets) {
