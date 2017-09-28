@@ -15,15 +15,22 @@ function setup() {
 		springs.push(new spring(initialHeight));
 	}
 	shaders = setupShaders(gl, getVerts, getColors, getPoints, getSizes);
-	setupBassball(setupAudio());
 	window.addEventListener("resize", resize);
 	window.addEventListener("orientationchange", resize);
 	resize();
+	window.addEventListener("mousedown", setupAudio);
 	window.addEventListener("mousemove", mouseMove);
 	window.addEventListener("mouseup", dropBassball);
+	window.addEventListener("touchstart", setupAudio);
 	window.addEventListener("touchmove", touchMove);
 	window.addEventListener("touchend", dropBassball);
 	requestFrame(draw);
+}
+
+function setupAudio() {
+	setupBassball(setupOscillators());
+	window.removeEventListener("mousedown", setupAudio);
+	window.removeEventListener("touchstart", setupAudio);
 }
 
 function resize() {

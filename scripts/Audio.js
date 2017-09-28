@@ -1,28 +1,16 @@
 "use strict";
 
-var context;
 var triangle;
 var sawtooth;
 var origin = 0;
 var previous = 0;
 var splashed = true;
 
-function iOSFix() {
-	var source = context.createBufferSource();
-	if (source.noteOn) {
-		source.buffer = context.createBuffer(1, 1, 22050);
-		source.connect(context.destination);
-		source.noteOn();
-	}
-	window.removeEventListener("touchstart", iOSFix);
-}
-
-function setupAudio() {
-	context = new (window.AudioContext || window.webkitAudioContext)();
-	window.addEventListener("touchstart", iOSFix);
-	triangle = createOscillator("triangle");
-	sawtooth = createOscillator("sawtooth");
-	return createOscillator("square");
+function setupOscillators() {
+	var context = new (window.AudioContext || window.webkitAudioContext)();
+	triangle = createOscillator(context, "triangle");
+	sawtooth = createOscillator(context, "sawtooth");
+	return createOscillator(context, "square");
 }
 
 function updateAudio(x, y, springs, droplets) {
@@ -57,7 +45,7 @@ function updateAudio(x, y, springs, droplets) {
 	previous = y;
 }
 
-function createOscillator(type) {
+function createOscillator(context, type) {
 	var oscillator = context.createOscillator();
 	oscillator.type = type;
 	var gain = context.createGain();
