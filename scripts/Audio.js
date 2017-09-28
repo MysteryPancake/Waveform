@@ -7,22 +7,22 @@ var origin = 0;
 var previous = 0;
 var splashed = true;
 
+function iOSFix() {
+	var source = context.createBufferSource();
+	if (source.noteOn) {
+		source.buffer = context.createBuffer(1, 1, 22050);
+		source.connect(context.destination);
+		source.noteOn();
+	}
+	window.removeEventListener("touchstart", iOSFix);
+}
+
 function setupAudio() {
 	context = new (window.AudioContext || window.webkitAudioContext)();
+	window.addEventListener("touchstart", iOSFix);
 	triangle = createOscillator("triangle");
 	sawtooth = createOscillator("sawtooth");
 	return createOscillator("square");
-}
-
-function createOscillator(type) {
-	var oscillator = context.createOscillator();
-	oscillator.type = type;
-	var gain = context.createGain();
-	gain.gain.value = 0;
-	oscillator.connect(gain);
-	gain.connect(context.destination);
-	oscillator.start();
-	return { osc: oscillator, gain: gain };
 }
 
 function updateAudio(x, y, springs, droplets) {
@@ -55,6 +55,17 @@ function updateAudio(x, y, springs, droplets) {
 		}
 	}
 	previous = y;
+}
+
+function createOscillator(type) {
+	var oscillator = context.createOscillator();
+	oscillator.type = type;
+	var gain = context.createGain();
+	gain.gain.value = 0;
+	oscillator.connect(gain);
+	gain.connect(context.destination);
+	oscillator.start();
+	return { osc: oscillator, gain: gain };
 }
 
 function splash(x, y, droplets) {

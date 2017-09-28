@@ -37,13 +37,6 @@ function updateBassball(x, y, droplets) {
 function dropBassball() {
 	square.gain.gain.value = 0;
 	bassball = undefined;
-	iOSFix();
-}
-
-function iOSFix() {
-	if (context.state === "suspended") {
-		context.resume();
-	}
 }
 
 function drip(x, y, droplets) {
