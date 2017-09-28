@@ -6,7 +6,7 @@ var origin = 0;
 var previous = 0;
 var splashed = true;
 
-function setupOscillators() {
+function setupAudio() {
 	var context = new (window.AudioContext || window.webkitAudioContext)();
 	triangle = createOscillator(context, "triangle");
 	sawtooth = createOscillator(context, "sawtooth");

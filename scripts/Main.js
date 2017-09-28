@@ -10,32 +10,31 @@ var requestFrame = window.requestAnimationFrame || window.webkitRequestAnimation
 
 function setup() {
 	gl = document.getElementById("canvas").getContext("webgl");
-	gl.clearColor(0, 0.1, 0.2, 1);
-	for (var i = 0; i < springCount; i++) {
-		springs.push(new spring(initialHeight));
-	}
 	shaders = setupShaders(gl, getVerts, getColors, getPoints, getSizes);
+	gl.clearColor(0, 0.1, 0.2, 1);
 	window.addEventListener("resize", resize);
 	window.addEventListener("orientationchange", resize);
 	resize();
-	window.addEventListener("mousedown", setupAudio);
 	window.addEventListener("mousemove", mouseMove);
 	window.addEventListener("mouseup", dropBassball);
-	window.addEventListener("touchstart", setupAudio);
+	setupBassball(setupAudio());
+	window.addEventListener("touchstart", iOSFix);
 	window.addEventListener("touchmove", touchMove);
 	window.addEventListener("touchend", dropBassball);
+	for (var i = 0; i < springCount; i++) {
+		springs.push(new spring(initialHeight));
+	}
 	requestFrame(draw);
-}
-
-function setupAudio() {
-	setupBassball(setupOscillators());
-	window.removeEventListener("mousedown", setupAudio);
-	window.removeEventListener("touchstart", setupAudio);
 }
 
 function resize() {
 	gl.canvas.width = window.innerWidth;
 	gl.canvas.height = window.innerHeight;
+}
+
+function iOSFix() {
+	setupBassball(setupAudio());
+	window.removeEventListener("touchstart", iOSFix);
 }
 
 function moved(e, x, y) {
