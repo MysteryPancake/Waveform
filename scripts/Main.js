@@ -18,15 +18,15 @@ function setup() {
 	window.addEventListener("resize", resize);
 	window.addEventListener("orientationchange", resize);
 	resize();
-	window.addEventListener("mousemove", mouseMove);
-	window.addEventListener("mouseup", dropBassball);
 	if ("ontouchstart" in window) {
 		window.addEventListener("touchstart", iOSFix);
+		window.addEventListener("touchmove", touchMove);
+		window.addEventListener("touchend", dropBassball);
 	} else {
 		setupBassball(setupAudio());
+		window.addEventListener("mousemove", mouseMove);
+		window.addEventListener("mouseup", dropBassball);
 	}
-	window.addEventListener("touchmove", touchMove);
-	window.addEventListener("touchend", dropBassball);
 	requestFrame(draw);
 }
 
