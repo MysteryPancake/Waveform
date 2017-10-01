@@ -2,27 +2,32 @@
 
 var square;
 var bassball;
-var previousPosition = { x: 0, y: 0 };
 
 function setupBassball(oscillator) {
 	square = oscillator;
 }
 
-function createBassball(droplets, size) {
-	bassball = new droplet({ x: 0, y: 0 }, { x: 0, y: 0 }, size);
+function createBassball(x, y, size, droplets) {
+	bassball = new droplet(x, y, 0, 0, size);
+	bassball.previousX = x;
+	bassball.previousY = y;
+	bassball.move = function() {
+		this.velocityX = (this.previousX - this.x) * 0.2;
+		this.velocityY = (this.previousY - this.y) * 0.2;
+		this.x += this.velocityX;
+		this.y += this.velocityY;
+	};
 	droplets.push(bassball);
 }
 
 function updateBassball(x, y, droplets) {
 	if (!bassball) return;
-	bassball.position.x = x;
-	bassball.position.y = y;
 	if (y > 0) {
 		square.gain.gain.value = bassball.size * 0.005;
-		var difference = Math.abs(x - previousPosition.x) + Math.abs(y - previousPosition.y);
-		square.osc.frequency.value = getSnapped(x) * 0.25 + difference * 1000;
-		if (difference > 0.1) {
-			drip(x, y, droplets);
+		var distance = Math.abs(bassball.previousX - x) + Math.abs(bassball.previousY - y);
+		square.osc.frequency.value = getSnapped(x) * 0.25 + distance * 1000;
+		if (distance > 0.1) {
+			drip(bassball.x, bassball.y, droplets);
 			bassball.size -= 1;
 			if (bassball.size <= 0) {
 				dropBassball();
@@ -31,7 +36,8 @@ function updateBassball(x, y, droplets) {
 	} else {
 		dropBassball();
 	}
-	previousPosition = { x: x, y: y };
+	bassball.previousX = x;
+	bassball.previousY = y;
 }
 
 function dropBassball() {
@@ -40,8 +46,8 @@ function dropBassball() {
 }
 
 function drip(x, y, droplets) {
-	var size = 10 + Math.random() * 10;
-	var velocity = (Math.random() - 0.5) * 0.01;
 	var position = x + (Math.random() - 0.5) * 0.1;
-	droplets.push(new droplet({ x: position, y: y }, { x: velocity, y: 0 }, size));
+	var velocity = (Math.random() - 0.5) * 0.01;
+	var size = 10 + Math.random() * 10;
+	droplets.push(new droplet(position, y, velocity, 0, size));
 }

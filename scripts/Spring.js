@@ -1,11 +1,11 @@
 "use strict";
 
 function spring(height) {
+	this.dampening = 0.025;
+	this.tension = 0.025;
 	this.velocity = 0;
 	this.height = height;
 	this.target = height;
-	this.tension = 0.025;
-	this.dampening = 0.025;
 	this.update = function() {
 		var acceleration = -this.tension * (this.height - this.target) - (this.dampening * this.velocity);
 		this.velocity += acceleration;

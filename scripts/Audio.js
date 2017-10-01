@@ -29,7 +29,9 @@ function updateAudio(x, y, springs, droplets) {
 			springs[i].target = initialHeight;
 		}
 		var size = Math.max(spring.height, y - origin) * 200;
-		if (size > 50) { createBassball(droplets, size); }
+		if (size > 50) {
+			createBassball(x, y, size, droplets);
+		}
 	} else {
 		splashed = false;
 		triangle.gain.gain.value = -y;
@@ -58,9 +60,9 @@ function createOscillator(context, type) {
 
 function splash(x, y, droplets) {
 	for (var i = 0; i < Math.random() * 5; i++) {
+		var velocity = (Math.random() - 0.5) * 0.05;
 		var size = 10 + Math.random() * 20;
-		var velocity = { x: (Math.random() - 0.5) * 0.05, y: y * 0.1 };
-		droplets.push(new droplet({ x: x, y: y }, velocity, size));
+		droplets.push(new droplet(x, y, velocity, y * 0.1, size));
 	}
 }
 

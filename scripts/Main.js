@@ -40,22 +40,22 @@ function iOSFix() {
 	window.removeEventListener("touchstart", iOSFix);
 }
 
-function moved(e, x, y) {
+function move(e, x, y) {
 	updateAudio(x, y, springs, droplets);
 	updateBassball(x, y, droplets);
 	e.preventDefault();
 }
 
-function mouseMove(e) {
-	var x = 2 * (e.pageX / gl.canvas.width) - 1;
-	var y = -2 * (e.pageY / gl.canvas.height) + 1;
-	moved(e, x, y);
-}
-
 function touchMove(e) {
 	var x = 2 * (e.targetTouches[0].pageX / gl.canvas.width) - 1;
 	var y = -2 * (e.targetTouches[0].pageY / gl.canvas.height) + 1;
-	moved(e, x, y);
+	move(e, x, y);
+}
+
+function mouseMove(e) {
+	var x = 2 * (e.pageX / gl.canvas.width) - 1;
+	var y = -2 * (e.pageY / gl.canvas.height) + 1;
+	move(e, x, y);
 }
 
 function getVerts() {
@@ -79,7 +79,7 @@ function getColors() {
 function getPoints() {
 	var points = [];
 	for (var i = 0; i < droplets.length; i++) {
-		points.push(droplets[i].position.x, droplets[i].position.y);
+		points.push(droplets[i].x, droplets[i].y);
 	}
 	return new Float32Array(points);
 }
