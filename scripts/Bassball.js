@@ -30,7 +30,7 @@ function updateBassball(x, y, droplets) {
 		square.osc.frequency.value = getSnapped(x) * 0.25 + distance * 1000;
 		if (distance > 0.1) {
 			drip(bassball.x, bassball.y, droplets);
-			bassball.size -= 1;
+			bassball.size--;
 			if (bassball.size < 1) {
 				dropBassball();
 			}
