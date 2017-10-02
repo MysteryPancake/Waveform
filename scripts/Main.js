@@ -9,7 +9,10 @@ var initialHeight = 0.05;
 var requestFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function(e) { return window.setTimeout(e, 1000 / 60); };
 
 function setup() {
-	gl = document.getElementById("canvas").getContext("webgl");
+	gl = document.getElementById("canvas").getContext("webgl", { alpha: false });
+	gl.enable(gl.BLEND);
+	gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+	gl.getExtension("OES_standard_derivatives");
 	gl.clearColor(0, 0.1, 0.2, 1);
 	for (var i = 0; i < springCount; i++) {
 		springs.push(new spring(initialHeight));

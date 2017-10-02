@@ -11,15 +11,18 @@ var shaderSource = {
 			}
 		`,
 		Fragment: `
+			#extension GL_OES_standard_derivatives : enable
 			void main(void) {
-				lowp vec2 circCoord = 2.0 * gl_PointCoord - 1.0;
-				if (dot(circCoord, circCoord) > 1.0) discard;
-				lowp vec3 lightDir = normalize(vec3(0, -1, -0.5));
+				lowp vec2 cxy = 2.0 * gl_PointCoord - 1.0;
+				lowp float radius = dot(cxy, cxy);
 				const lowp vec3 ambient = vec3(0.5, 0.2, 0.1);
-				const lowp vec3 lightDiffuse = vec3(1, 0.5, 0.2);
-				lowp vec3 normal = vec3(circCoord, sqrt(1.0 - dot(circCoord, circCoord)));
-				lowp float color = max(dot(normal, lightDir), 0.0);
-				gl_FragColor = vec4(ambient + lightDiffuse * color, 1);
+				const lowp vec3 diffuse = vec3(1, 0.5, 0.2);
+				lowp vec3 normal = vec3(cxy, sqrt(1.0 - radius));
+				lowp vec3 direction = normalize(vec3(0, -1, -0.5));
+				lowp float color = max(dot(normal, direction), 0.0);
+				lowp float delta = fwidth(radius);
+				lowp float alpha = 1.0 - smoothstep(1.0 - delta, 1.0 + delta, radius);
+				gl_FragColor = vec4(ambient + diffuse * color, alpha);
 			}
 		`
 	},
@@ -40,8 +43,9 @@ var shaderSource = {
 			varying lowp vec4 DestinationColor;
 			void main(void) {
 				lowp vec4 color = DestinationColor;
-				if (DestinationColor.r > (0.5 - Height.y))
-				color = mix(vec4(1, 0.5, 0.2, 1), DestinationColor, (0.5 - DestinationColor.r) / Height.y);
+				if (DestinationColor.r > (0.5 - Height.y)) {
+					color = mix(vec4(1, 0.5, 0.2, 1), DestinationColor, (0.5 - DestinationColor.r) / Height.y);
+				}
 				gl_FragColor = color;
 			}
 		`
@@ -75,7 +79,7 @@ function shader(gl, name) {
 	gl.linkProgram(program);
 	var success = gl.getProgramParameter(program, gl.LINK_STATUS);
 	if (!success) {
-		window.alert(`Couldn't link shader ${name}! ${gl.getProgramInfoLog(shader)}`);
+		window.alert(`Couldn't link shader ${name}! ${gl.getProgramInfoLog(program)}`);
 	}
 	return program;
 }
