@@ -31,7 +31,7 @@ function updateBassball(x, y, droplets) {
 		if (distance > 0.1) {
 			drip(bassball.x, bassball.y, droplets);
 			bassball.size -= 1;
-			if (bassball.size <= 0) {
+			if (bassball.size < 1) {
 				dropBassball();
 			}
 		}
