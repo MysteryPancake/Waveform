@@ -9,7 +9,7 @@ var initialHeight = 0.05;
 var requestFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function(e) { return window.setTimeout(e, 1000 / 60); };
 
 function setup() {
-	gl = document.getElementById("canvas").getContext("webgl", { alpha: false });
+	gl = document.getElementById("canvas").getContext("webgl", { alpha: false, depth: false, stencil: false, antialias: true, premultipliedAlpha: false });
 	gl.enable(gl.BLEND);
 	gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 	gl.getExtension("OES_standard_derivatives");
