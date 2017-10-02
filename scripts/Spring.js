@@ -1,13 +1,11 @@
 "use strict";
 
 function spring(height) {
-	this.dampening = 0.025;
-	this.tension = 0.025;
-	this.velocity = 0;
 	this.height = height;
 	this.target = height;
-	this.update = function() {
-		var acceleration = -this.tension * (this.height - this.target) - (this.dampening * this.velocity);
+	this.velocity = 0;
+	this.update = function(tension, dampening) {
+		var acceleration = -tension * (this.height - this.target) - (dampening * this.velocity);
 		this.velocity += acceleration;
 		this.height += this.velocity;
 	};
@@ -15,7 +13,7 @@ function spring(height) {
 
 function updateSprings(springs, passes, spread) {
 	for (var i = 0; i < springs.length; i++) {
-		springs[i].update();
+		springs[i].update(0.025, 0.025);
 	}
 	var leftDeltas = [];
 	var rightDeltas = [];

@@ -16,8 +16,6 @@ function setupAudio() {
 function updateAudio(x, y, springs, droplets) {
 	triangle.osc.frequency.value = getSnapped(x);
 	sawtooth.osc.frequency.value = getSnapped(x);
-	var spring = getSpring(x);
-	if (!spring) return;
 	if (y > 0) {
 		triangle.gain.gain.value = 0;
 		sawtooth.gain.gain.value = 0;
@@ -28,7 +26,8 @@ function updateAudio(x, y, springs, droplets) {
 			splash(i * 2 / (springs.length - 1) - 1, springs[i].height, droplets);
 			springs[i].target = initialHeight;
 		}
-		var size = Math.max(spring.height, y - origin) * 200;
+		var spring = getSpring(x);
+		var size = Math.max(spring && spring.height || 0, y - origin) * 200;
 		if (size > 50) {
 			createBassball(x, y, size, droplets);
 		}
@@ -38,7 +37,10 @@ function updateAudio(x, y, springs, droplets) {
 		if (y > previous) {
 			if (origin === 0) { origin = y; }
 			sawtooth.gain.gain.value = y - origin;
-			spring.target += (y - previous) * 5;
+			var spring = getSpring(x);
+			if (spring) {
+				spring.target += (y - previous) * 5;
+			}
 		} else if (y < previous) {
 			sawtooth.gain.gain.value = 0;
 			origin = 0;
