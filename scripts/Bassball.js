@@ -25,7 +25,7 @@ function createBassball(x, y, size, droplets) {
 function updateBassball(x, y, droplets) {
 	if (!bassball) return;
 	if (y > 0) {
-		square.gain.gain.value = bassball.size * 0.005;
+		square.gain.gain.value = bassball.size * 0.0025;
 		var distance = Math.abs(previousX - x) + Math.abs(previousY - y);
 		square.osc.frequency.value = getSnapped(x) * 0.25 + distance * 1000;
 		if (distance > 0.1) {
