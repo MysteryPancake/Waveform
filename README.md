@@ -1,2 +1,2 @@
-# [Waveform](https://MysteryPancake.github.io/Waveform/)
+# [Waveform](https://MysteryPancake.github.io/Waveform)
 An experimental synth.
