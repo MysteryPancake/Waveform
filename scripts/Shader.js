@@ -65,7 +65,7 @@ function compile(gl, name, type, str) {
 	gl.compileShader(shader);
 	var success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
 	if (!success) {
-		window.alert(`Couldn't compile shader ${name}${str}! ${gl.getShaderInfoLog(shader)}`);
+		window.alert("Couldn't compile shader " + name + str + "! " + gl.getShaderInfoLog(shader));
 	}
 	return shader;
 }
@@ -79,7 +79,7 @@ function shader(gl, name) {
 	gl.linkProgram(program);
 	var success = gl.getProgramParameter(program, gl.LINK_STATUS);
 	if (!success) {
-		window.alert(`Couldn't link shader ${name}! ${gl.getProgramInfoLog(program)}`);
+		window.alert("Couldn't link shader " + name + "! " + gl.getProgramInfoLog(program));
 	}
 	return program;
 }
