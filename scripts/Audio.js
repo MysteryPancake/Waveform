@@ -1,6 +1,5 @@
 "use strict";
 
-var context;
 var triangle;
 var sawtooth;
 var origin = 0;
@@ -8,18 +7,18 @@ var previous = 0;
 var splashed = true;
 
 function setupAudio() {
-	context = new (window.AudioContext || window.webkitAudioContext)();
-	triangle = createOscillator("triangle");
-	sawtooth = createOscillator("sawtooth");
-	return createOscillator("square");
+	var context = new (window.AudioContext || window.webkitAudioContext)();
+	triangle = createOscillator(context, "triangle");
+	sawtooth = createOscillator(context, "sawtooth");
+	return createOscillator(context, "square");
 }
 
 function updateAudio(x, y, springs, droplets) {
-	triangle.osc.frequency.setValueAtTime(getSnapped(x), context.currentTime);
-	sawtooth.osc.frequency.setValueAtTime(getSnapped(x), context.currentTime);
+	triangle.osc.frequency.setValueAtTime(getSnapped(x), triangle.context.currentTime);
+	sawtooth.osc.frequency.setValueAtTime(getSnapped(x), sawtooth.context.currentTime);
 	if (y > 0) {
-		triangle.gain.gain.setValueAtTime(0, context.currentTime);
-		sawtooth.gain.gain.setValueAtTime(0, context.currentTime);
+		triangle.gain.gain.setValueAtTime(0, triangle.context.currentTime);
+		sawtooth.gain.gain.setValueAtTime(0, sawtooth.context.currentTime);
 		if (splashed) return;
 		splashed = true;
 		for (var i = 0; i < springs.length; i++) {
@@ -34,23 +33,23 @@ function updateAudio(x, y, springs, droplets) {
 		}
 	} else {
 		splashed = false;
-		triangle.gain.gain.setValueAtTime(-y, context.currentTime);
+		triangle.gain.gain.setValueAtTime(-y, triangle.context.currentTime);
 		if (y > previous) {
 			if (origin === 0) { origin = y; }
-			sawtooth.gain.gain.setValueAtTime(y - origin, context.currentTime);
+			sawtooth.gain.gain.setValueAtTime(y - origin, sawtooth.context.currentTime);
 			var spring = getSpring(x);
 			if (spring) {
 				spring.target += (y - previous) * 5;
 			}
 		} else if (y < previous) {
-			sawtooth.gain.gain.setValueAtTime(0, context.currentTime);
+			sawtooth.gain.gain.setValueAtTime(0, sawtooth.context.currentTime);
 			origin = 0;
 		}
 	}
 	previous = y;
 }
 
-function createOscillator(type) {
+function createOscillator(context, type) {
 	var oscillator = context.createOscillator();
 	oscillator.type = type;
 	var gain = context.createGain();
@@ -58,7 +57,7 @@ function createOscillator(type) {
 	oscillator.connect(gain);
 	gain.connect(context.destination);
 	oscillator.start();
-	return { osc: oscillator, gain: gain };
+	return { context: context, osc: oscillator, gain: gain };
 }
 
 function splash(x, y, droplets) {
