@@ -25,9 +25,9 @@ function createBassball(x, y, size, droplets) {
 function updateBassball(x, y, droplets) {
 	if (!bassball) return;
 	if (y > 0) {
-		square.gain.gain.value = bassball.size * 0.0025;
+		square.gain.gain.setValueAtTime(bassball.size * 0.0025, square.context.currentTime);
 		var distance = Math.abs(previousX - x) + Math.abs(previousY - y);
-		square.osc.frequency.value = getSnapped(x) * 0.25 + distance * 1000;
+		square.osc.frequency.setValueAtTime(getSnapped(x) * 0.25 + distance * 1000, square.context.currentTime);
 		if (distance > 0.1) {
 			drip(bassball.x, bassball.y, droplets);
 			bassball.size--;
@@ -43,7 +43,7 @@ function updateBassball(x, y, droplets) {
 }
 
 function dropBassball() {
-	square.gain.gain.value = 0;
+	square.gain.gain.setValueAtTime(0, square.context.currentTime);
 	bassball = undefined;
 }
 
