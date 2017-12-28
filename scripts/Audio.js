@@ -1,5 +1,6 @@
 "use strict";
 
+var context;
 var triangle;
 var sawtooth;
 var origin = 0;
@@ -7,15 +8,15 @@ var previous = 0;
 var splashed = true;
 
 function setupAudio() {
-	var context = new (window.AudioContext || window.webkitAudioContext)();
-	triangle = createOscillator(context, "triangle");
-	sawtooth = createOscillator(context, "sawtooth");
-	return createOscillator(context, "square");
+	context = new (window.AudioContext || window.webkitAudioContext)();
+	triangle = createOscillator("triangle");
+	sawtooth = createOscillator("sawtooth");
+	return createOscillator("square");
 }
 
 function updateAudio(x, y, springs, droplets) {
-	triangle.osc.frequency.value = getSnapped(x);
-	sawtooth.osc.frequency.value = getSnapped(x);
+	triangle.osc.frequency.setTargetAtTime(getSnapped(x), context.currentTime, 0.2);
+	sawtooth.osc.frequency.setTargetAtTime(getSnapped(x), context.currentTime, 0.2);
 	if (y > 0) {
 		triangle.gain.gain.value = 0;
 		sawtooth.gain.gain.value = 0;
@@ -49,11 +50,11 @@ function updateAudio(x, y, springs, droplets) {
 	previous = y;
 }
 
-function createOscillator(context, type) {
+function createOscillator(type) {
 	var oscillator = context.createOscillator();
 	oscillator.type = type;
 	var gain = context.createGain();
-	gain.gain.value = 0;
+	gain.gain.setTargetAtTime(0, context.currentTime, 0.2);
 	oscillator.connect(gain);
 	gain.connect(context.destination);
 	oscillator.start();
