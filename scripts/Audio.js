@@ -15,11 +15,11 @@ function setupAudio() {
 }
 
 function updateAudio(x, y, springs, droplets) {
-	triangle.osc.frequency.setTargetAtTime(getSnapped(x), context.currentTime, 0);
-	sawtooth.osc.frequency.setTargetAtTime(getSnapped(x), context.currentTime, 0);
+	triangle.osc.frequency.setValueAtTime(getSnapped(x), context.currentTime);
+	sawtooth.osc.frequency.setValueAtTime(getSnapped(x), context.currentTime);
 	if (y > 0) {
-		triangle.gain.gain.setTargetAtTime(0, context.currentTime, 0);
-		sawtooth.gain.gain.setTargetAtTime(0, context.currentTime, 0);
+		triangle.gain.gain.setValueAtTime(0, context.currentTime);
+		sawtooth.gain.gain.setValueAtTime(0, context.currentTime);
 		if (splashed) return;
 		splashed = true;
 		for (var i = 0; i < springs.length; i++) {
@@ -34,16 +34,16 @@ function updateAudio(x, y, springs, droplets) {
 		}
 	} else {
 		splashed = false;
-		triangle.gain.gain.setTargetAtTime(-y, context.currentTime, 0);
+		triangle.gain.gain.setValueAtTime(-y, context.currentTime);
 		if (y > previous) {
 			if (origin === 0) { origin = y; }
-			sawtooth.gain.gain.setTargetAtTime(y - origin, context.currentTime, 0);
+			sawtooth.gain.gain.setValueAtTime(y - origin, context.currentTime);
 			var spring = getSpring(x);
 			if (spring) {
 				spring.target += (y - previous) * 5;
 			}
 		} else if (y < previous) {
-			sawtooth.gain.gain.setTargetAtTime(0, context.currentTime, 0);
+			sawtooth.gain.gain.setValueAtTime(0, context.currentTime);
 			origin = 0;
 		}
 	}
@@ -54,7 +54,7 @@ function createOscillator(type) {
 	var oscillator = context.createOscillator();
 	oscillator.type = type;
 	var gain = context.createGain();
-	gain.gain.setTargetAtTime(0, context.currentTime, 0);
+	gain.gain.setValueAtTime(0, context.currentTime);
 	oscillator.connect(gain);
 	gain.connect(context.destination);
 	oscillator.start();
