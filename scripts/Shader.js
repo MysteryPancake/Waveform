@@ -2,53 +2,12 @@
 
 var shaderSource = {
 	Droplet: {
-		Vertex: `
-			attribute mediump vec4 Position;
-			attribute lowp float Size;
-			void main(void) {
-				gl_Position = Position;
-				gl_PointSize = Size;
-			}
-		`,
-		Fragment: `
-			#extension GL_OES_standard_derivatives : enable
-			void main(void) {
-				lowp vec2 cxy = 2.0 * gl_PointCoord - 1.0;
-				lowp float radius = dot(cxy, cxy);
-				const lowp vec3 ambient = vec3(0.5, 0.2, 0.1);
-				const lowp vec3 diffuse = vec3(1, 0.5, 0.2);
-				lowp vec3 normal = vec3(cxy, sqrt(1.0 - radius));
-				lowp vec3 direction = normalize(vec3(0, -1, -0.5));
-				lowp float color = max(dot(normal, direction), 0.0);
-				lowp float delta = fwidth(radius);
-				lowp float alpha = 1.0 - smoothstep(1.0 - delta, 1.0 + delta, radius);
-				gl_FragColor = vec4(ambient + diffuse * color, alpha);
-			}
-		`
+		Vertex: "\n\t\t\tattribute mediump vec4 Position;\n\t\t\tattribute lowp float Size;\n\t\t\tvoid main(void) {\n\t\t\t\tgl_Position = Position;\n\t\t\t\tgl_PointSize = Size;\n\t\t\t}\n\t\t",
+		Fragment: "\n\t\t\t#extension GL_OES_standard_derivatives : enable\n\t\t\tvoid main(void) {\n\t\t\t\tlowp vec2 cxy = 2.0 * gl_PointCoord - 1.0;\n\t\t\t\tlowp float radius = dot(cxy, cxy);\n\t\t\t\tconst lowp vec3 ambient = vec3(0.5, 0.2, 0.1);\n\t\t\t\tconst lowp vec3 diffuse = vec3(1, 0.5, 0.2);\n\t\t\t\tlowp vec3 normal = vec3(cxy, sqrt(1.0 - radius));\n\t\t\t\tlowp vec3 direction = normalize(vec3(0, -1, -0.5));\n\t\t\t\tlowp float color = max(dot(normal, direction), 0.0);\n\t\t\t\tlowp float delta = fwidth(radius);\n\t\t\t\tlowp float alpha = 1.0 - smoothstep(1.0 - delta, 1.0 + delta, radius);\n\t\t\t\tgl_FragColor = vec4(ambient + diffuse * color, alpha);\n\t\t\t}\n\t\t"
 	},
 	Wave: {
-		Vertex: `
-			attribute mediump vec4 Position;
-			attribute lowp vec4 SourceColor;
-			varying mediump vec4 Height;
-			varying lowp vec4 DestinationColor;
-			void main(void) {
-				Height = Position / 10.0;
-				DestinationColor = SourceColor;
-				gl_Position = Position;
-			}
-		`,
-		Fragment: `
-			varying mediump vec4 Height;
-			varying lowp vec4 DestinationColor;
-			void main(void) {
-				lowp vec4 color = DestinationColor;
-				if (DestinationColor.r > (0.5 - Height.y)) {
-					color = mix(vec4(1, 0.5, 0.2, 1), DestinationColor, (0.5 - DestinationColor.r) / Height.y);
-				}
-				gl_FragColor = color;
-			}
-		`
+		Vertex: "\n\t\t\tattribute mediump vec4 Position;\n\t\t\tattribute lowp vec4 SourceColor;\n\t\t\tvarying mediump vec4 Height;\n\t\t\tvarying lowp vec4 DestinationColor;\n\t\t\tvoid main(void) {\n\t\t\t\tHeight = Position / 10.0;\n\t\t\t\tDestinationColor = SourceColor;\n\t\t\t\tgl_Position = Position;\n\t\t\t}\n\t\t",
+		Fragment: "\n\t\t\tvarying mediump vec4 Height;\n\t\t\tvarying lowp vec4 DestinationColor;\n\t\t\tvoid main(void) {\n\t\t\t\tlowp vec4 color = DestinationColor;\n\t\t\t\tif (DestinationColor.r > (0.5 - Height.y)) {\n\t\t\t\t\tcolor = mix(vec4(1, 0.5, 0.2, 1), DestinationColor, (0.5 - DestinationColor.r) / Height.y);\n\t\t\t\t}\n\t\t\t\tgl_FragColor = color;\n\t\t\t}\n\t\t"
 	}
 };
 
