@@ -69,5 +69,5 @@ function splash(x, y, droplets) {
 }
 
 function getSnapped(x) {
-	return Math.floor((x + 1) * 10) * 27 + 100;
+	return 256 + (x + 1) * 256;
 }
