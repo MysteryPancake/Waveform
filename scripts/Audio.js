@@ -33,10 +33,10 @@ function updateAudio(x, y, springs, droplets) {
 		}
 	} else {
 		splashed = false;
-		triangle.gain.gain.setValueAtTime(-y, triangle.context.currentTime);
+		triangle.gain.gain.setValueAtTime(-y * 0.25, triangle.context.currentTime);
 		if (y > previous) {
 			if (origin === 0) { origin = y; }
-			sawtooth.gain.gain.setValueAtTime(y - origin, sawtooth.context.currentTime);
+			sawtooth.gain.gain.setValueAtTime((y - origin) * 0.25, sawtooth.context.currentTime);
 			var spring = getSpring(x);
 			if (spring) {
 				spring.target += (y - previous) * 5;
