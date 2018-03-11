@@ -21,7 +21,7 @@ function setup() {
 	window.addEventListener("resize", resize);
 	window.addEventListener("orientationchange", resize);
 	resize();
-	if ("ontouchstart" in window) {
+	if (window.ontouchstart) {
 		window.addEventListener("touchstart", iOSFix);
 		window.addEventListener("touchmove", touchMove);
 		window.addEventListener("touchend", dropBassball);
