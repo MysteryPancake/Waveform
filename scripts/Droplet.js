@@ -18,7 +18,7 @@ function updateDroplets(droplets, bass) {
 		var droplet = droplets[i];
 		var spring = getSpring(droplet.x);
 		if (spring && spring.height > droplet.y + 0.1) {
-			spring.velocity -= droplet.size * 0.0005;
+			spring.velocity -= droplet.size * 0.00025;
 		}
 		if (droplet === bass) {
 			droplet.move();
