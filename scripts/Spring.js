@@ -5,8 +5,7 @@ function spring(height) {
 	this.target = height;
 	this.velocity = 0;
 	this.update = function(tension, dampening) {
-		var acceleration = -tension * (this.height - this.target) - (dampening * this.velocity);
-		this.velocity += acceleration;
+		this.velocity += tension * (this.target - this.height) - (this.velocity * dampening);
 		this.height += this.velocity;
 	};
 }
