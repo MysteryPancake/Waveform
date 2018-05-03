@@ -14,6 +14,7 @@ function setupAudio() {
 }
 
 function updateAudio(x, y, springs, droplets) {
+	if (!triangle || !sawtooth) return;
 	triangle.osc.frequency.setValueAtTime(getSnapped(x), triangle.context.currentTime);
 	sawtooth.osc.frequency.setValueAtTime(getSnapped(x), sawtooth.context.currentTime);
 	if (y > 0) {

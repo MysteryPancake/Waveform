@@ -22,11 +22,11 @@ function setup() {
 	window.addEventListener("orientationchange", resize);
 	resize();
 	if (window.ontouchstart) {
-		window.addEventListener("touchstart", iOSFix);
+		window.addEventListener("touchstart", fix);
 		window.addEventListener("touchmove", touchMove);
 		window.addEventListener("touchend", dropBassball);
 	} else {
-		setupBassball(setupAudio());
+		window.addEventListener("mousedown", fix);
 		window.addEventListener("mousemove", mouseMove);
 		window.addEventListener("mouseup", dropBassball);
 	}
@@ -38,9 +38,13 @@ function resize() {
 	gl.canvas.height = window.innerHeight;
 }
 
-function iOSFix() {
+function fix() {
 	setupBassball(setupAudio());
-	window.removeEventListener("touchstart", iOSFix);
+	if (window.ontouchstart) {
+		window.removeEventListener("touchstart", fix);
+	} else {
+		window.removeEventListener("mousedown", fix);
+	}
 }
 
 function move(e, x, y) {
