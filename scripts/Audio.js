@@ -28,7 +28,7 @@ function updateAudio(x, y, springs, droplets) {
 			springs[i].target = initialHeight;
 		}
 		var spring = getSpring(x);
-		var size = Math.max(spring && spring.height || 0, y - origin) * 200;
+		var size = Math.max(spring ? spring.height : 0, y - origin) * 200;
 		if (size > 50) {
 			createBassball(x, y, size, droplets);
 		}
