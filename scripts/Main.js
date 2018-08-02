@@ -108,7 +108,7 @@ function draw() {
 	updateDroplets(droplets, bassball);
 	gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 	gl.clear(gl.COLOR_BUFFER_BIT);
-	if (droplets.length > 0) {
+	if (droplets.length) {
 		gl.useProgram(shaders.droplet.program);
 		gl.bindBuffer(gl.ARRAY_BUFFER, shaders.droplet.buffers.position);
 		gl.bufferData(gl.ARRAY_BUFFER, getPoints(), gl.DYNAMIC_DRAW);
