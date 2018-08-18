@@ -2,7 +2,7 @@
 
 var triangle;
 var sawtooth;
-var origin = 0;
+var initial;
 var previous = 0;
 var splashed = true;
 
@@ -28,7 +28,7 @@ function updateAudio(x, y, springs, droplets) {
 			springs[i].target = initialHeight;
 		}
 		var spring = getSpring(x);
-		var size = Math.max(spring ? spring.height : 0, y - origin) * 200;
+		var size = Math.max(spring ? spring.height : 0, y - initial || 0) * 200;
 		if (size > 50) {
 			createBassball(x, y, size, droplets);
 		}
@@ -36,15 +36,15 @@ function updateAudio(x, y, springs, droplets) {
 		splashed = false;
 		triangle.gain.gain.setValueAtTime(-y * 0.25, triangle.context.currentTime);
 		if (y > previous) {
-			if (origin === 0) { origin = y; }
-			sawtooth.gain.gain.setValueAtTime((y - origin) * 0.25, sawtooth.context.currentTime);
+			if (initial === 0) { initial = y; }
+			sawtooth.gain.gain.setValueAtTime((y - initial) * 0.25, sawtooth.context.currentTime);
 			var spring = getSpring(x);
 			if (spring) {
 				spring.target += (y - previous) * 5;
 			}
 		} else if (y < previous) {
 			sawtooth.gain.gain.setValueAtTime(0, sawtooth.context.currentTime);
-			origin = 0;
+			initial = undefined;
 		}
 	}
 	previous = y;
