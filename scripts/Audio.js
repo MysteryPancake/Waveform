@@ -36,7 +36,9 @@ function updateAudio(x, y, springs, droplets) {
 		splashed = false;
 		triangle.gain.gain.setValueAtTime(-y * 0.25, triangle.context.currentTime);
 		if (y > previous) {
-			if (initial === 0) { initial = y; }
+			if (initial === undefined) {
+				initial = y;
+			}
 			sawtooth.gain.gain.setValueAtTime((y - initial) * 0.25, sawtooth.context.currentTime);
 			var spring = getSpring(x);
 			if (spring) {
