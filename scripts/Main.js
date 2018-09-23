@@ -15,7 +15,7 @@ function setup() {
 	gl.getExtension("OES_standard_derivatives");
 	gl.clearColor(0, 0.1, 0.2, 1);
 	for (var i = 0; i < springCount; i++) {
-		springs.push(new spring(initialHeight));
+		springs.push(new Spring(initialHeight));
 	}
 	shaders = setupShaders(gl, getVerts, getColors, getPoints, getSizes);
 	window.addEventListener("resize", resize);

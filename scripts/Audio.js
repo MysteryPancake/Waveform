@@ -67,7 +67,7 @@ function splash(x, y, droplets) {
 	for (var i = 0; i < Math.random() * 5; i++) {
 		var velocity = (Math.random() - 0.5) * 0.05;
 		var size = 10 + Math.random() * 20;
-		droplets.push(new droplet(x, y, velocity, y * 0.1, size));
+		droplets.push(new Droplet(x, y, velocity, y * 0.1, size));
 	}
 }
 

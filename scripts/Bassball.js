@@ -10,7 +10,7 @@ function setupBassball(oscillator) {
 }
 
 function createBassball(x, y, size, droplets) {
-	bassball = new droplet(x, y, 0, 0, size);
+	bassball = new Droplet(x, y, 0, 0, size);
 	previousX = x;
 	previousY = y;
 	bassball.move = function() {
@@ -51,5 +51,5 @@ function drip(x, y, droplets) {
 	var position = x + (Math.random() - 0.5) * 0.1;
 	var velocity = (Math.random() - 0.5) * 0.01;
 	var size = 10 + Math.random() * 10;
-	droplets.push(new droplet(position, y, velocity, 0, size));
+	droplets.push(new Droplet(position, y, velocity, 0, size));
 }

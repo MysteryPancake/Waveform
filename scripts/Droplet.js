@@ -1,6 +1,6 @@
 "use strict";
 
-function droplet(x, y, velocityX, velocityY, size) {
+function Droplet(x, y, velocityX, velocityY, size) {
 	this.x = x;
 	this.y = y;
 	this.velocityX = velocityX;

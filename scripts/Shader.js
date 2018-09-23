@@ -29,7 +29,7 @@ function compile(gl, name, type, str) {
 	return shader;
 }
 
-function shader(gl, name) {
+function createShader(gl, name) {
 	var vertex = compile(gl, name, gl.VERTEX_SHADER, "Vertex");
 	var fragment = compile(gl, name, gl.FRAGMENT_SHADER, "Fragment");
 	var program = gl.createProgram();
@@ -44,7 +44,7 @@ function shader(gl, name) {
 }
 
 function setupShaders(gl, verts, colors, points, sizes) {
-	var wave = shader(gl, "Wave");
+	var wave = createShader(gl, "Wave");
 	var waveShader = {
 		program: wave,
 		buffers: {
@@ -58,7 +58,7 @@ function setupShaders(gl, verts, colors, points, sizes) {
 	};
 	gl.enableVertexAttribArray(waveShader.attribs.position);
 	gl.enableVertexAttribArray(waveShader.attribs.color);
-	var droplet = shader(gl, "Droplet");
+	var droplet = createShader(gl, "Droplet");
 	var dropletShader = {
 		program: droplet,
 		buffers: {

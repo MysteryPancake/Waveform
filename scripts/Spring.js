@@ -1,6 +1,6 @@
 "use strict";
 
-function spring(height) {
+function Spring(height) {
 	this.height = height;
 	this.target = height;
 	this.velocity = 0;
@@ -17,22 +17,22 @@ function updateSprings(springs, passes, spread) {
 	var leftDeltas = [];
 	var rightDeltas = [];
 	for (var j = 0; j < passes; j++) {
-		for (var i = 0; i < springs.length; i++) {
-			if (i > 0) {
-				leftDeltas[i] = spread * (springs[i].height - springs[i - 1].height);
-				springs[i - 1].velocity += leftDeltas[i];
+		for (var k = 0; k < springs.length; k++) {
+			if (k > 0) {
+				leftDeltas[k] = spread * (springs[k].height - springs[k - 1].height);
+				springs[k - 1].velocity += leftDeltas[k];
 			}
-			if (i < springs.length - 1) {
-				rightDeltas[i] = spread * (springs[i].height - springs[i + 1].height);
-				springs[i + 1].velocity += rightDeltas[i];
+			if (k < springs.length - 1) {
+				rightDeltas[k] = spread * (springs[k].height - springs[k + 1].height);
+				springs[k + 1].velocity += rightDeltas[k];
 			}
 		}
-		for (var i = 0; i < springs.length; i++) {
-			if (i > 0) {
-				springs[i - 1].height += leftDeltas[i];
+		for (var l = 0; l < springs.length; l++) {
+			if (l > 0) {
+				springs[l - 1].height += leftDeltas[l];
 			}
-			if (i < springs.length - 1) {
-				springs[i + 1].height += rightDeltas[i];
+			if (l < springs.length - 1) {
+				springs[l + 1].height += rightDeltas[l];
 			}
 		}
 	}
