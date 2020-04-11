@@ -54,8 +54,8 @@ function move(e, x, y) {
 }
 
 function touchMove(e) {
-	var x = 2 * (e.targetTouches[0].pageX / gl.canvas.width) - 1;
-	var y = -2 * (e.targetTouches[0].pageY / gl.canvas.height) + 1;
+	var x = 2 * (e.touches[0].pageX / gl.canvas.width) - 1;
+	var y = -2 * (e.touches[0].pageY / gl.canvas.height) + 1;
 	move(e, x, y);
 }
 
